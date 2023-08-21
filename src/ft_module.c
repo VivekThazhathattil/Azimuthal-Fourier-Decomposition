@@ -11,13 +11,13 @@ int main(int argc, char* argv[])
 	double beg_time, end_time;
 	beg_time = omp_get_wtime();
 
-	const char* in_file_name = "in_data/ur_full.h5";
+	const char* in_file_name = "in_data/ur_104p.h5";
 	const char* dset_path = "/ds1";
-	const char* out_file_prefix = "out_data/op_";
-	const int num_recon_modes = 3;
+	const char* out_file_prefix = "out_data/ur_104p_nmall/";
+	const int num_recon_modes = 103;
 	char out_name_buf[256];
 	int i;
-	int num_threads = 10;
+	int num_threads = 24;
 
 	/* set number of threads that OpenMP will use */
 	omp_set_num_threads(num_threads);
@@ -51,7 +51,8 @@ int main(int argc, char* argv[])
 		free(res);
 	}
 
-	save_h5(save_data, dset->nt, num_modes, dset->nrnz);
+	save_h5(save_data, dset->nt, num_modes, dset->nrnz, 
+		out_file_prefix);
 
 	free_h5_save(save_data, dset->nt);
 

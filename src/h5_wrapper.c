@@ -192,7 +192,8 @@ void full_h5_save(char* out_file_name , h5_save_t* sav,
 }
 
 /*-------------------------------------------------------------*/
-void save_h5(h5_save_t* sav, int nt, int nmodes, int nrnz)
+void save_h5(h5_save_t* sav, int nt, int nmodes, int nrnz,
+	const char* out_file_prefix)
 /*-------------------------------------------------------------*/
 {
 	hsize_t dims[1];
@@ -200,9 +201,11 @@ void save_h5(h5_save_t* sav, int nt, int nmodes, int nrnz)
 
 	dims[0] = nrnz * nmodes;
 
-	full_h5_save("out_ft.h5", sav, 'c', dims, nt);
+	sprintf(out_name, "%sout_ft.h5", out_file_prefix);
+	full_h5_save(out_name, sav, 'c', dims, nt);
 
-	full_h5_save("out_ift.h5", sav, 'd', dims, nt);
+	sprintf(out_name, "%sout_ift.h5", out_file_prefix);
+	full_h5_save(out_name, sav, 'd', dims, nt);
 }
 
 /*-------------------------------------------------------------*/

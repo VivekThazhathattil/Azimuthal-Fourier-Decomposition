@@ -39,7 +39,7 @@
 	void free_1d_data(double*);
 	void free_in_dset(struct IN_DSET_s*);
 	void free_h5_save(struct H5_SAVE_s*, int);
-	void save_h5(struct H5_SAVE_s*, int, int, int);
+	void save_h5(struct H5_SAVE_s*, int, int, int, const char*);
 	void full_h5_save(char*, struct H5_SAVE_s*, char, hsize_t*, int);
 
 #endif
