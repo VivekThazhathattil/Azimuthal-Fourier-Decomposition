@@ -45,10 +45,13 @@ in_dset_t* arrange_data(double* dat, hsize_t nt, hsize_t nth,
 
 	for(i = 0; i < nt; ++i){
 		mat->dat[i] = (double*) malloc(sizeof(double) * nth * nrnz);
+	}
+
+	for(i = 0; i < nrnz; ++i){
 		for(j = 0; j < nth; ++j){
-			for(k = 0; k < nrnz; ++k){
-				mat->dat[i][k + (nrnz)*j] = 
-					dat[(nt*nth)*k + (nth)*j + i];
+			for(k = 0; k < nt; ++k){
+				mat->dat[k][nth * i + j] = 
+					dat[k + (nt * j) + (nt * nth * i)];	
 			}
 		}
 	}
@@ -174,10 +177,12 @@ void full_h5_save(char* out_file_name , h5_save_t* sav,
 						);	
 
 		if(dtype == 'c'){
-			H5Dwrite(dset_id, type_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, sav->ft[i]);
+			H5Dwrite(dset_id, type_id, H5S_ALL, H5S_ALL, 
+				H5P_DEFAULT, sav->ft[i]);
 		}
 		else{
-			H5Dwrite(dset_id, type_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, sav->ift[i]);
+			H5Dwrite(dset_id, type_id, H5S_ALL, H5S_ALL, 
+				H5P_DEFAULT, sav->ift[i]);
 		}
 	}
 
@@ -229,10 +234,20 @@ void free_in_dset(in_dset_t* mat)
 }
 
 /*-------------------------------------------------------------*/
-void free_h5_save(struct H5_SAVE_s* save_data)
+void free_h5_save(struct H5_SAVE_s* save_data, int nt)
 /*-------------------------------------------------------------*/
 {
+	int i;
+
+	for(i = 0; i < nt; ++i){
+		free(save_data->ft[i]);	
+	}
 	free(save_data->ft);
+
+	for(i = 0; i < nt; ++i){
+		free(save_data->ift[i]);
+	}
 	free(save_data->ift);
+
 	free(save_data);
 }

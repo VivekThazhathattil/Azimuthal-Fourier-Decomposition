@@ -30,7 +30,7 @@ DC_t trap_integrate(in_dset_t* df, int tidx, int pidx, int m)
 {
 
 	DC_t g(int mode, int ndivs, int div_bound_idx, double val){
-		return cexp((-2 * M_PI * I * mode * div_bound_idx)/ndivs) * val;
+		return cexp((-2 * M_PI * _Complex_I * mode * div_bound_idx)/ndivs) * val;
 	}
 
 	int ii;
@@ -41,7 +41,7 @@ DC_t trap_integrate(in_dset_t* df, int tidx, int pidx, int m)
 
 	for(ii = 0; ii < ndiv - 1; ++ii){
 		res += (g(m, ndiv, ii, d[pidx + ii]) + 
-						g(m, ndiv, ii, d[pidx + ii])) * (dx/2);
+						g(m, ndiv, ii + 1, d[pidx + ii + 1])) * (dx/2);
 	}
 
 	res += (g(m, ndiv, ndiv - 1, d[pidx + ndiv - 1]) +
@@ -90,13 +90,15 @@ double* get_inv_fourier_trans(DC_t* ft, in_dset_t* dset,
 
 	for(ii = 0; ii < nrnz; ++ii){
 		for(jj = 0; jj < total_num_modes; ++jj){
+			int ins_idx = (ii * total_num_modes) + jj;
 			for(kk = 0; kk < num_recon_modes; ++kk){
-				int m = kk - num_recon_modes/2;
-				int pidx = (ii * total_num_modes) +
-					(total_num_modes/2) - (num_recon_modes/2) + jj;
-				ift[ii * total_num_modes + jj] += creal(ft[pidx + kk] * 
-					cexp(I * M_PI * m * jj/dset->nth));
+				int m = kk - (num_recon_modes/2);
+				int pidx = ins_idx + 
+					(total_num_modes/2) - (num_recon_modes/2) - jj;
+				ift[ins_idx] += creal(ft[pidx + kk] * 
+					cexp((_Complex_I * 2 * M_PI * m * jj)/total_num_modes));
 			}
+			ift[ins_idx] = ift[ins_idx]/(2 * M_PI);
 		}
 	}
 
